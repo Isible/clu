@@ -10,6 +10,8 @@
 
 ## Introduction
 
+Library for common concepts used for building programming languages
+
 Shared library for citadel and VoidVM
 
 ## Installation
