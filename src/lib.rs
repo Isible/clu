@@ -1,14 +1,13 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+mod file_handler;
+mod literal;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::file_handler::{FileHandler, BuiltinExtensions};
+
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn test() {
+        FileHandler::new("test".to_string());
     }
 }
