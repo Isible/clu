@@ -1,4 +1,6 @@
-use std::fmt::Debug;
+#![allow(unused)]
+
+use std::{fmt::Debug, fs::File, io::Read};
 
 use crate::literal::Literal;
 
@@ -6,6 +8,7 @@ pub struct FileHandler {
     pub name: String,
     pub extension: Box<dyn Extension>,
     pub path: String,
+    pub content: String,
 }
 
 impl FileHandler {
@@ -22,10 +25,17 @@ impl FileHandler {
             // TODO: Throw actual error once error library is implemented
             None => todo!(),
         };
+        let mut content_buffer = String::new();
+        let mut file = match File::open(&path) {
+            Ok(file) => file,
+            Err(_) => todo!(),
+        };
+        file.read_to_string(&mut content_buffer);
         Self {
             name,
             extension,
-            path: path,
+            path,
+            content: content_buffer,
         }
     }
 
