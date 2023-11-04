@@ -1,8 +1,11 @@
+use std::fmt::Debug;
+
 use crate::literal::Literal;
 
 pub struct FileHandler {
     pub name: String,
     pub extension: Box<dyn Extension>,
+    pub path: String,
 }
 
 impl FileHandler {
@@ -19,7 +22,11 @@ impl FileHandler {
             // TODO: Throw actual error once error library is implemented
             None => todo!(),
         };
-        Self { name, extension }
+        Self {
+            name,
+            extension,
+            path: path,
+        }
     }
 
     pub fn new(path: String) -> Self {
