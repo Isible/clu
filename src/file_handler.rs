@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-use std::{fmt::Debug, fs::File, io::Read};
+use std::{fmt::{Debug, Display}, fs::File, io::Read};
 
 use crate::literal::Literal;
 
@@ -9,6 +9,12 @@ pub struct FileHandler {
     pub extension: Box<dyn Extension>,
     pub path: String,
     pub content: String,
+}
+
+impl Display for FileHandler {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "FileHandler {{ name: {}, extension: {}, path: {}, content: {} }}", self.name, self.extension.literal(), self.path, self.content)
+    }
 }
 
 impl FileHandler {
