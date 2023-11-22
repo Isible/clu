@@ -4,6 +4,11 @@ use std::{fmt::{Debug, Display}, fs::File, io::Read};
 
 use crate::literal::Literal;
 
+/// The file handler allows you to easily
+/// manage config, source and other files.
+/// 
+/// It provides extensible mechanics for extesnions
+/// and tracking file locations
 pub struct FileHandler {
     pub name: String,
     pub extension: Box<dyn Extension>,
@@ -102,4 +107,13 @@ impl Literal for BuiltinExtensions {
             BuiltinExtensions::UNRECOGNIZED(lit) => lit,
         }
     }
+}
+
+pub struct FileNotFoundError {
+    pub provided_path: String,
+    pub similar_path: String,
+}
+
+pub struct FailedToOpenFileError {
+
 }

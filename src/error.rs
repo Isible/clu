@@ -1,4 +1,4 @@
-use std::{process, os::unix::fs::MetadataExt};
+use std::process;
 
 use colored::Colorize;
 
