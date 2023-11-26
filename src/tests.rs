@@ -2,18 +2,19 @@
 mod tests {
     use crate::{file_handler::{FileHandler, BuiltinExtensions}, error::{Error, throw}};
 
-
     #[test]
     fn test_filehandler() {
         let expected = FileHandler {
             name: "test".to_string(),
+            path: "test".to_string(),
             extension: Box::from(BuiltinExtensions::TXT),
-            path: "tests/test.txt".to_string(),
+            full_path: "tests/test.txt".to_string(),
             content: "test".to_string(),
         };
-        let file_handler = FileHandler::new("tests/test.txt".to_string());
+        let file_handler = FileHandler::new("tests/test.tx".to_string());
+        println!("path: {}", file_handler.path);
         assert_eq!(expected.extension.literal(), file_handler.extension.literal());
-        assert_eq!(expected.path, file_handler.path);
+        assert_eq!(expected.full_path, file_handler.full_path);
         assert_eq!(expected.name, file_handler.name);
         assert_eq!(expected.content, file_handler.content);
     }
@@ -32,7 +33,7 @@ mod tests {
             }
 
             fn additional_ctx(&self) -> Option<Vec<String>> {
-                Some(vec![String::from("Additional Context for the t)est")])
+                Some(vec![String::from("Additional Context for the test")])
             }
 
             fn tip(&self) -> Option<String> {
@@ -40,6 +41,6 @@ mod tests {
             }
         }
 
-        throw(TestError)
+        throw(TestError, false);
     }
 }

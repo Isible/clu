@@ -51,7 +51,7 @@ pub trait Error {
     fn tip(&self) -> Option<String>;
 }
 
-pub fn throw<T, E: Error>(err: E) -> T {
+pub fn throw<E: Error>(err: E, stop_execution: bool) {
     let head = format!("{}: {}", err.name().red(), err.desc());
 
     let mut body = String::new();
@@ -63,7 +63,7 @@ pub fn throw<T, E: Error>(err: E) -> T {
         }),
         None => (),
     }
-    body.remove(body.len()-1);
+    body.pop();
 
     let footer =
     match err.tip() {
@@ -84,5 +84,7 @@ pub fn throw<T, E: Error>(err: E) -> T {
 
     println!("{}", msg);
 
-    process::exit(0)
+    if stop_execution{
+        process::exit(0)
+    }
 }
