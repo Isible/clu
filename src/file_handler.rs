@@ -7,10 +7,7 @@ use std::{
     io::Read,
 };
 
-use crate::{
-    literal::Literal,
-    util,
-};
+use crate::{literal::LiteralStr, util};
 
 /// The file handler allows you to easily
 /// manage config, source and other files.
@@ -40,7 +37,7 @@ impl Display for FileHandler {
 
 impl FileHandler {
     pub fn new_with_extension(
-        path: String,
+        path: &String,
         extension: Box<dyn Extension>,
     ) -> Result<Self, FileHandlerError> {
         let paths: Vec<&str> = path.split("/").collect();
@@ -48,7 +45,7 @@ impl FileHandler {
         let name_raw: Vec<&str> = match paths.last() {
             Some(name_raw) => name_raw.split(".").collect(),
             // TODO: Throw actual error once error library is implemented
-            None =>  return Err(FileHandlerError::new(path)),
+            None => return Err(FileHandlerError::new(path)),
         };
         // name without extension
         let name = match name_raw.first() {
@@ -73,12 +70,12 @@ impl FileHandler {
             name,
             path: dir_path.to_string(),
             extension,
-            full_path: path,
+            full_path: path.clone(),
             content: content_buffer,
         })
     }
 
-    pub fn new(path: String) -> Result<Self, FileHandlerError> {
+    pub fn new(path: &String) -> Result<Self, FileHandlerError> {
         let paths: Vec<&str> = path.split("/").collect();
         // name with extension
         let name: Vec<&str> = match paths.last() {
@@ -98,7 +95,7 @@ impl FileHandler {
     }
 }
 
-pub trait Extension: Literal {}
+pub trait Extension: LiteralStr {}
 
 pub enum BuiltinExtensions {
     TXT,
@@ -124,8 +121,8 @@ impl BuiltinExtensions {
 
 impl Extension for BuiltinExtensions {}
 
-impl Literal for BuiltinExtensions {
-    fn literal(&self) -> String {
+impl LiteralStr for BuiltinExtensions {
+    fn literal(&self) -> &str {
         match self {
             BuiltinExtensions::JSON => "json",
             BuiltinExtensions::TXT => "txt",
@@ -133,25 +130,25 @@ impl Literal for BuiltinExtensions {
             BuiltinExtensions::TOML => "toml",
             BuiltinExtensions::XML => "xml",
             BuiltinExtensions::UNRECOGNIZED(lit) => lit,
-        }.to_string()
+        }
     }
 }
 
 #[derive(Debug)]
-pub struct FileHandlerError {
-    path: String,
+pub struct FileHandlerError<'a> {
+    path: &'a String,
 }
 
-impl FileHandlerError {
-    pub fn new(path: String) -> Self {
+impl<'a> FileHandlerError<'a> {
+    pub fn new(path: &'a String) -> Self {
         Self { path }
     }
 }
 
-impl Display for FileHandlerError {
+impl Display for FileHandlerError<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(&format!("FileHandlerError{{ {} }}", self.path))
     }
 }
 
-impl Error for FileHandlerError {}
+impl Error for FileHandlerError<'_> {}
