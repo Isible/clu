@@ -125,7 +125,7 @@ impl BuiltinExtensions {
 impl Extension for BuiltinExtensions {}
 
 impl Literal for BuiltinExtensions {
-    fn literal(&self) -> &str {
+    fn literal(&self) -> String {
         match self {
             BuiltinExtensions::JSON => "json",
             BuiltinExtensions::TXT => "txt",
@@ -133,7 +133,7 @@ impl Literal for BuiltinExtensions {
             BuiltinExtensions::TOML => "toml",
             BuiltinExtensions::XML => "xml",
             BuiltinExtensions::UNRECOGNIZED(lit) => lit,
-        }
+        }.to_string()
     }
 }
 

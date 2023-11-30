@@ -1,3 +1,3 @@
 pub trait Literal {
-    fn literal(self: &Self) -> &str;
+    fn literal(self: &Self) -> String;
 }
