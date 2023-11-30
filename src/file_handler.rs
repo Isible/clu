@@ -84,12 +84,12 @@ impl FileHandler {
         let name: Vec<&str> = match paths.last() {
             Some(name) => name.split(".").collect(),
             // TODO: Throw actual error once error library is implemented
-            None => todo!(),
+            None => return Err(FileHandlerError::new(path)),
         };
         let extension_str = match name.last() {
             Some(extension) => extension,
             // TODO: Throw actual error once error library is implemented
-            None => todo!(),
+            None => return Err(FileHandlerError::new(path)),
         };
 
         let extension = Box::from(BuiltinExtensions::from_literal(extension_str));
