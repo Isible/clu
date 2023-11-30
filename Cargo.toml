@@ -1,5 +1,5 @@
 [package]
-name = "clu"
+name = "common-language-utilities"
 version = "0.1.0"
 edition = "2021"
 authors = ["Thepigcat76 <benpospo@gmail.com>"]
