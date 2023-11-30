@@ -11,7 +11,7 @@ mod tests {
             full_path: "tests/test.txt".to_string(),
             content: "test".to_string(),
         };
-        let file_handler = FileHandler::new("tests/test.tx".to_string());
+        let file_handler = FileHandler::new("tests/test.txt".to_string()).expect("Failed to get file handler");
         println!("path: {}", file_handler.path);
         assert_eq!(expected.extension.literal(), file_handler.extension.literal());
         assert_eq!(expected.full_path, file_handler.full_path);

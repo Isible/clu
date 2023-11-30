@@ -1,13 +1,13 @@
 #![allow(unused)]
 
 use std::{
+    error::Error,
     fmt::{Debug, Display},
     fs::{self, DirEntry, File},
     io::Read,
 };
 
 use crate::{
-    error::{throw, Error},
     literal::Literal,
     util,
 };
@@ -39,27 +39,27 @@ impl Display for FileHandler {
 }
 
 impl FileHandler {
-    pub fn new_with_extension(path: String, extension: Box<dyn Extension>) -> Self {
+    pub fn new_with_extension(
+        path: String,
+        extension: Box<dyn Extension>,
+    ) -> Result<Self, FileHandlerError> {
         let paths: Vec<&str> = path.split("/").collect();
         // name with extension
         let name_raw: Vec<&str> = match paths.last() {
             Some(name_raw) => name_raw.split(".").collect(),
             // TODO: Throw actual error once error library is implemented
-            None => todo!(),
+            None =>  return Err(FileHandlerError::new(path)),
         };
         // name without extension
         let name = match name_raw.first() {
             Some(name) => name.to_string(),
             // TODO: Throw actual error once error library is implemented
-            None => todo!(),
+            None => return Err(FileHandlerError::new(path)),
         };
         let mut content_buffer = String::new();
         let mut file = match File::open(&path) {
             Ok(file) => file,
-            Err(_) => {
-                throw(FileNotFoundError::new(path), true);
-                panic!()
-            }
+            Err(_) => return Err(FileHandlerError::new(path)),
         };
         file.read_to_string(&mut content_buffer);
 
@@ -69,16 +69,16 @@ impl FileHandler {
 
         let dir_path = &path[0..path_len];
 
-        Self {
+        Ok(Self {
             name,
             path: dir_path.to_string(),
             extension,
             full_path: path,
             content: content_buffer,
-        }
+        })
     }
 
-    pub fn new(path: String) -> Self {
+    pub fn new(path: String) -> Result<Self, FileHandlerError> {
         let paths: Vec<&str> = path.split("/").collect();
         // name with extension
         let name: Vec<&str> = match paths.last() {
@@ -137,60 +137,21 @@ impl Literal for BuiltinExtensions {
     }
 }
 
-pub struct FileNotFoundError {
-    pub provided_path: String,
-    pub similar_path: Option<String>,
+#[derive(Debug)]
+pub struct FileHandlerError {
+    path: String,
 }
 
-type OptionalDirEntry = Option<Vec<Result<DirEntry, std::io::Error>>>;
-
-impl FileNotFoundError {
+impl FileHandlerError {
     pub fn new(path: String) -> Self {
-        let mut dirs: Vec<&str> = path.split("/").collect();
-        let name = dirs.pop().unwrap();
-
-        let new_path = dirs.join("/");
-
-        let file_names: Vec<String> = match fs::read_dir(&new_path) {
-            Ok(entries) => entries
-                .filter_map(|entry| entry.ok().and_then(|e| e.file_name().into_string().ok()))
-                .collect(),
-            Err(_) => {
-                panic!("Error reading directory");
-            }
-        };
-
-        let similar_path = util::find_most_similar_string(name, file_names);
-
-        Self {
-            provided_path: path,
-            similar_path,
-        }
+        Self { path }
     }
 }
 
-impl Error for FileNotFoundError {
-    fn name(&self) -> &str {
-        "File not found error"
-    }
-
-    fn desc(&self) -> String {
-        format!(
-            "A file with the name `{}` cannot be found",
-            self.provided_path
-        )
-    }
-
-    fn additional_ctx(&self) -> Option<Vec<String>> {
-        match &self.similar_path {
-            Some(sim_path) => Some(vec![format!("Found {} instead", sim_path)]),
-            None => None,
-        }
-    }
-
-    fn tip(&self) -> Option<String> {
-        None
+impl Display for FileHandlerError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&format!("FileHandlerError{{ {} }}", self.path))
     }
 }
 
-pub struct FailedToOpenFileError {}
+impl Error for FileHandlerError {}
