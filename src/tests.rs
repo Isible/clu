@@ -5,7 +5,7 @@ mod tests {
     use crate::{
         error::{throw, Error},
         file_handler::{BuiltinExtensions, FileHandler},
-        numbers::{LargeInteger, LargeNumber},
+        numbers::{LargeInteger, LargeNumber}, util,
     };
 
     #[test]
@@ -58,14 +58,16 @@ mod tests {
     fn test_large_numbers() {
         let num1 = LargeInteger {
             val: String::from(
-                "700000000000000000000000000000000000000000000000000000000000000000000000",
+                "10",
             ),
         };
         let num2 = LargeInteger {
             val: String::from(
-                "100000000000000000000000000000000000000000000000000000000000000000000000",
+                "4",
             ),
         };
-        println!("Result: {:#?}", num1.add(num2).expect("Failed to add"));
+        let string = util::adjust_int_length((String::from("150"), String::from("8973")));
+        dbg!("{}", string);
+        println!("Result: {:#?}", num1.add(num2).expect("Failed to add").val);
     }
 }
