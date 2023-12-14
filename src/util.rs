@@ -18,7 +18,7 @@ pub fn find_most_similar_string(string_a: &str, string_list: Vec<String>) -> Opt
     most_similar_string
 }
 
-pub fn uint_to_char(from: u32) -> char {
+pub fn uint_to_char(from: u8) -> char {
     match from {
         0 => '0',
         1 => '1',
@@ -36,7 +36,7 @@ pub fn uint_to_char(from: u32) -> char {
 
 /// converts numbers from 0-18 (the largest result that can be achieved
 /// in an addition of two single digit numbers) to a vector of characters 
-pub fn uint_to_short_vec<'a>(from: u32) -> Vec<char> {
+pub fn uint_to_short_vec<'a>(from: u8) -> Vec<char> {
     match from {
         0 => vec!['0'],
         1 => vec!['1'],

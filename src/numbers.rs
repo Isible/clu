@@ -1,10 +1,5 @@
 use core::num;
-use std::{
-    error::Error,
-    fmt::{write, Display},
-    str::FromStr,
-    string::ParseError,
-};
+use std::{error::Error, fmt::Display, hash::BuildHasher, iter::zip, str::FromStr};
 
 use crate::util;
 
@@ -59,49 +54,75 @@ impl LargeNumber for LargeInteger {
     }
 
     fn add(&self, second: Self) -> Result<Self, LargeNumberError> {
+        let (first_val, second_val) =
+            util::adjust_int_length((self.val.clone(), second.val.clone()));
         // use two if to allow for more precise error description
         if self.is_valid() {
             if second.is_valid() {
                 // first large number's value as a character iterator
-                let num1 = self.val.chars().rev();
+                let num1 = first_val.chars().rev();
                 // second large number's value as a character iterator
-                let num2 = second.val.chars().rev();
+                let num2 = second_val.chars().rev();
                 // if a result returns more than 9,
                 // the second digit of that result goes to the buffer
-                let mut buf: Option<u8> = None;
+                let mut buf: u8 = 0;
                 // end result with type LargeInteger
                 let mut res = LargeInteger::new();
+
+                let mut index: usize = 0;
+
                 num1.zip(num2).for_each(|(ch1, ch2)| {
                     // check if both numbers are 0 so we can just push 0 without doing any calculations
-                    if ch1 != '0' || ch2 != '0' && buf == None {
+                    if ch1 == '0' && ch2 == '0' {
+                        res.push('0')
+                    } else {
                         // unwrap is safe as we check if all character are digits using the is_valid checks
 
                         // single character from num1 as a digit
-                        let ch1_num = ch1.to_digit(10).unwrap();
+                        let ch1_num: u8 = ch1.to_digit(10).unwrap() as u8;
+
                         // single character from num2 as a digit
-                        let ch2_num = ch2.to_digit(10).unwrap();
+                        let ch2_num: u8 = ch2.to_digit(10).unwrap() as u8;
 
                         // raw result of the addition of ch1_num and ch2_num
-                        let temp_res = ch1_num + ch2_num;
+                        let temp_res: u8 = ch1_num + ch2_num;
+
+                        dbg!("Iteration: {}, ch1: {}, ch1: {}, temp_res: {}, buf: {}, res: {}", index, ch1, ch2, temp_res, buf, &res.val);
 
                         // check if the temp result needs to push overflow to the buffer
                         if temp_res < 10 {
-                            res.push(util::uint_to_char(temp_res));
+                            if buf != 0 {
+                                if temp_res + buf < 10 {
+                                    res.push(util::uint_to_char(temp_res + buf));
+                                    buf = 0
+                                } else {
+                                    let temp_res = temp_res + buf;
+                                    let vec_char = util::uint_to_short_vec(temp_res + buf);
+                                    res.push(*vec_char.last().unwrap());
+                                    buf = vec_char.first().unwrap().to_digit(10).unwrap() as u8;
+                                }
+                            } else {
+                                res.push(util::uint_to_char(temp_res));
+                                buf = 0
+                            }
                         } else {
-                            let vec_char = util::uint_to_short_vec(temp_res);
-                            res.push(*vec_char.last().unwrap())
+                            let vec_char = util::uint_to_short_vec(buf + temp_res);
+                            res.push(*vec_char.last().unwrap());
+                            buf = vec_char.first().unwrap().to_digit(10).unwrap() as u8;
                         }
-                    } else {
-                        res.push('0')
                     }
+                    index += 1;
                 });
+                if buf != 0 {
+                    res.push(util::uint_to_char(buf))
+                }
                 let res: String = res.val.chars().rev().collect();
                 return Ok(LargeInteger::from(res));
             }
             return Err(LargeNumberError(
                 "Failed to add two large numbers as the first one is not valid",
             ));
-        }
+        };
         return Err(LargeNumberError(
             "Failed to add two large numbers as the first one is not valid",
         ));
