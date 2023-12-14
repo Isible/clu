@@ -3,7 +3,7 @@ mod tests {
     use crate::{
         error::{throw, Error},
         file_handler::{BuiltinExtensions, FileHandler},
-        numbers::{LargeInteger, LargeNumber}
+        numbers::{LargeInteger, LargeNumber},
     };
 
     #[test]
@@ -54,16 +54,16 @@ mod tests {
 
     #[test]
     fn test_large_numbers() {
-        let num1 = LargeInteger {
-            val: String::from(
-                "301",
-            ),
-        };
-        let num2 = LargeInteger {
-            val: String::from(
-                "1092",
-            ),
-        };
-        println!("Result: {:#?}", num1.add(num2).expect("Failed to add").val);
+        // addition
+        {
+            let num1 = LargeInteger {
+                val: String::from("1000000301"),
+            };
+            let num2 = LargeInteger {
+                val: String::from("1792"),
+            };
+            let result = num1.add(num2).expect("Failed to add");
+            assert_eq!(result, LargeInteger::from("1000002093"));
+        }
     }
 }

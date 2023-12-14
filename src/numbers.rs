@@ -87,8 +87,6 @@ impl LargeNumber for LargeInteger {
                         // raw result of the addition of ch1_num and ch2_num
                         let temp_res: u8 = ch1_num + ch2_num;
 
-                        dbg!("Iteration: {}, ch1: {}, ch1: {}, temp_res: {}, buf: {}, res: {}", index, ch1, ch2, temp_res, buf, &res.val);
-
                         // check if the temp result needs to push overflow to the buffer
                         if temp_res < 10 {
                             if buf != 0 {
