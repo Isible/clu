@@ -1,4 +1,4 @@
-use std::{string::ParseError, collections::VecDeque};
+use std::collections::VecDeque;
 
 use strsim::levenshtein;
 
@@ -18,6 +18,7 @@ pub fn find_most_similar_string(string_a: &str, string_list: Vec<String>) -> Opt
     most_similar_string
 }
 
+// converts a one digit long, unsigned integer into a character
 pub fn uint_to_char(from: u8) -> char {
     match from {
         0 => '0',

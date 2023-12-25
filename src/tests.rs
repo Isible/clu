@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use core::num;
+
     use crate::{
         error::{throw, Error},
         file_handler::{BuiltinExtensions, FileHandler},
@@ -64,6 +66,13 @@ mod tests {
             };
             let result = num1.add(num2).expect("Failed to add");
             assert_eq!(result, LargeInteger::from("1000002093"));
+        }
+
+        // subtraction
+        {
+            let num1 = LargeInteger::from("-1000");
+            let num2 = LargeInteger::from("-200");
+            println!("{}", num1.sub(num2));
         }
     }
 }

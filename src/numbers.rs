@@ -1,9 +1,8 @@
-use core::num;
-use std::{error::Error, fmt::Display, hash::BuildHasher, iter::zip, str::FromStr};
+use std::{error::Error, fmt::{Display, Debug}, str::FromStr};
 
 use crate::util;
 
-pub trait LargeNumber {
+pub trait LargeNumber: Debug + Display {
     fn is_valid(&self) -> bool;
 
     fn parse<F: FromStr>(&self) -> Result<F, F::Err>;
@@ -12,7 +11,7 @@ pub trait LargeNumber {
     where
         Self: Sized;
 
-    fn sub(&self, second: Self) -> Self;
+    fn sub(self, second: Self) -> Self;
 
     fn divide(&self, second: Self) -> Self;
 
@@ -41,6 +40,12 @@ impl From<String> for LargeInteger {
 impl From<&str> for LargeInteger {
     fn from(value: &str) -> Self {
         Self { val: value.into() }
+    }
+}
+
+impl Display for LargeInteger {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.val)
     }
 }
 
@@ -126,7 +131,20 @@ impl LargeNumber for LargeInteger {
         ));
     }
 
-    fn sub(&self, second: Self) -> Self {
+    fn sub(self, second: Self) -> Self {
+        let mut first = self;
+        let mut second = second;
+        if first.val.starts_with('-') && second.val.starts_with('-') {
+            first.val.remove(0);
+            second.val.remove(0);
+            return match first.add(second) {
+                Ok(mut ret_val) => {
+                    ret_val.val.insert(0, '-');
+                    ret_val
+                },
+                Err(err) => todo!("{}", err)
+            };
+        }
         todo!()
     }
 
