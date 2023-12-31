@@ -5,7 +5,7 @@ mod tests {
 
     #[test]
     fn filehandler() -> Result<(), FileHandlerError> {
-        let fh = FileHandler::new("tests/test.txt".into())?;
+        let fh = FileHandler::new(&"tests/test.txt".into())?;
         assert_eq!(&fh.content, "test for filehandler");
         Ok(())
     }

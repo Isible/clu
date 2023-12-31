@@ -11,7 +11,7 @@ pub struct FileHandler {
 }
 
 impl FileHandler {
-    pub fn new(path: String) -> Result<Self, FileHandlerError> {
+    pub fn new(path: &String) -> Result<Self, FileHandlerError> {
         let mut split_path: Vec<&str> = path.split('/').collect();
         let file_name = match split_path.pop() {
             Some(name) => (*name).to_owned(),
@@ -27,9 +27,9 @@ impl FileHandler {
             Err(err) => return Err(FileHandlerError(Box::from(err))),
         };
         Ok(Self {
-            file_name,
+            file_name: file_name,
             file_path: split_path.join(""),
-            full_path: path,
+            full_path: path.to_owned(),
             content: buf,
         })
     }
