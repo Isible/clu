@@ -1,5 +1,7 @@
 use std::{fs::File, io::Read, fmt::Display};
 
+use crate::errors::{self, FileHandlerError};
+
 #[derive(Debug)]
 pub struct FileHandler {
     pub file_name: String,
@@ -9,24 +11,27 @@ pub struct FileHandler {
 }
 
 impl FileHandler {
-    pub fn new(path: String) -> Self {
+    pub fn new(path: String) -> Result<Self, FileHandlerError> {
         let mut split_path: Vec<&str> = path.split('/').collect();
         let file_name = match split_path.pop() {
             Some(name) => (*name).to_owned(),
-            None => panic!("The provided path: {} does not contain a valid file name.", path),
+            None => return Err(FileHandlerError(Box::from(errors::FileNotFoundError(format!("The provided path: {} does not contain a valid file name.", path))))),
         };
         let mut file = match File::open(&path) {
             Ok(file) => file,
-            Err(_) => panic!("Failed to open file from path: {}. This might be caused due to restrictive file permissions or an incorrect file path", path),
+            Err(err) => return Err(FileHandlerError(Box::from(err))),
         };
         let mut buf = String::new();
-        file.read_to_string(&mut buf).expect("Failed to write file content to a string");
-        Self {
+        match file.read_to_string(&mut buf) {
+            Ok(_) => (),
+            Err(err) => return Err(FileHandlerError(Box::from(err))),
+        };
+        Ok(Self {
             file_name,
             file_path: split_path.join(""),
             full_path: path,
             content: buf,
-        }
+        })
     }
 }
 
