@@ -1,23 +1,17 @@
-use std::{error::Error, fmt::{Display, Debug}, str::FromStr};
+use std::{error::Error, fmt::{Debug, Display}, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign}, str::FromStr};
 
 use crate::util;
 
-pub trait LargeNumber: Debug + Display {
+pub trait LargeNumber: Debug + Display + AddAssign + SubAssign + MulAssign + DivAssign + Add + Sub + Mul + Div + Sized {
     fn is_valid(&self) -> bool;
 
     fn parse<F: FromStr>(&self) -> Result<F, F::Err>;
 
-    fn add(&self, second: Self) -> Result<Self, LargeNumberError>
-    where
-        Self: Sized;
-
-    fn sub(self, second: Self) -> Self;
-
-    fn divide(&self, second: Self) -> Self;
-
-    fn multiply(&self, second: Self) -> Self;
-
     fn push(&mut self, ch: char);
+
+    fn push_multiple(&mut self, ch: &str) {
+        ch.chars().for_each(|c| self.push(c))
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -39,7 +33,7 @@ impl From<String> for LargeInteger {
 
 impl From<&str> for LargeInteger {
     fn from(value: &str) -> Self {
-        Self { val: value.into() }
+        Self::from(value.to_string())
     }
 }
 
@@ -58,12 +52,24 @@ impl LargeNumber for LargeInteger {
         self.val.parse()
     }
 
-    fn add(&self, second: Self) -> Result<Self, LargeNumberError> {
+    fn push(&mut self, ch: char) {
+        self.val.push(ch)
+    }
+}
+
+impl Add for LargeInteger {
+    fn add(self, rhs: Self) -> Self::Output {
+        
+    }
+}
+
+impl AddAssign for LargeInteger {
+    fn add_assign(&mut self, rhs: Self) {
         let (first_val, second_val) =
-            util::adjust_int_length((self.val.clone(), second.val.clone()));
+            util::adjust_int_length((self.val.clone(), rhs.val.clone()));
         // use two if to allow for more precise error description
         if self.is_valid() {
-            if second.is_valid() {
+            if rhs.is_valid() {
                 // first large number's value as a character iterator
                 let num1 = first_val.chars().rev();
                 // second large number's value as a character iterator
