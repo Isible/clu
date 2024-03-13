@@ -1,7 +1,3 @@
-pub trait VecDisplay {
-    fn to_string(&self) -> String;
-}
-
 /// Macro for cleaner implementation of a trait for a struct
 #[macro_export]
 macro_rules! impl_trait {
