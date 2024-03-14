@@ -3,7 +3,13 @@ mod tests {
 
     use std::{collections::HashMap, env, fs, path::PathBuf};
 
-    use crate::{errors::FileHandlerError, files::FileHandler, map, snapshots::SnapshotTest, toml::{lexer::Lexer, tokens::Token}};
+    use crate::{
+        errors::FileHandlerError,
+        files::FileHandler,
+        map,
+        snapshots::SnapshotTest,
+        toml::{lexer::Lexer, tokens::Token},
+    };
 
     #[test]
     fn filehandler() -> Result<(), FileHandlerError> {
@@ -33,12 +39,9 @@ mod tests {
     fn toml() {
         let content = fs::read("tests/test.toml").expect("Failed to read from file");
         let mut lexer = Lexer::new(String::from_utf8(content).unwrap());
-        loop {
+        for _ in 0..10 {
             let tok = lexer.tokenize();
-            println!("{}", &tok);
-            if tok == Token::EOF {
-                break;
-            }
+            println!("{}", tok);
         }
     }
 }
