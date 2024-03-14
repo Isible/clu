@@ -31,6 +31,8 @@ impl SnapshotTest {
         let content_snapshot = fs::read_to_string(&path).unwrap_or_else(|_| {
             panic!("Could not read snapshot at path: {:?}", &path);
         });
+        let split = content_file.split('\n').collect::<Vec<&str>>();
+        dbg!(&split);
         if content_file != content_snapshot {
             fs::write(&path, content_file).unwrap_or_else(|_| {
                 panic!("Could not write snapshot to file");
