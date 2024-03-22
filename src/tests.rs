@@ -8,7 +8,7 @@ mod tests {
         files::FileHandler,
         map,
         snapshots::SnapshotTest,
-        toml::{lexer::Lexer, tokens::Token},
+        toml::{lexer::Lexer, parser::Parser, tokens::Token},
     };
 
     #[test]
@@ -39,9 +39,10 @@ mod tests {
     fn toml() {
         let content = fs::read("tests/test.toml").expect("Failed to read from file");
         let mut lexer = Lexer::new(String::from_utf8(content).unwrap());
+        let mut parser = Parser::new(&mut lexer);
         for _ in 0..10 {
-            let tok = lexer.tokenize();
-            println!("{}", tok);
+            let tok = parser.parse_stmt();
+            println!("{:?}", tok);
         }
     }
 }
