@@ -8,7 +8,6 @@ mod tests {
         files::FileHandler,
         map,
         snapshots::SnapshotTest,
-        toml::{lexer::Lexer, parser::Parser, tokens::Token},
     };
 
     #[test]
@@ -33,16 +32,5 @@ mod tests {
         let snapshot = SnapshotTest::new("testing", PathBuf::from("tests/main.c"));
         snapshot.setup_dir();
         snapshot.create_snapshot();
-    }
-
-    #[test]
-    fn toml() {
-        let content = fs::read("tests/test.toml").expect("Failed to read from file");
-        let mut lexer = Lexer::new(String::from_utf8(content).unwrap());
-        let mut parser = Parser::new(&mut lexer);
-        for _ in 0..10 {
-            let tok = parser.parse_stmt();
-            println!("{:?}", tok);
-        }
     }
 }

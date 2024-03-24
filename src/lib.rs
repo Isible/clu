@@ -3,5 +3,4 @@ pub mod util;
 pub mod maps;
 pub mod errors;
 pub mod snapshots;
-pub mod toml;
 mod tests;
