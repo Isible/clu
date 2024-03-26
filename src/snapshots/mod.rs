@@ -28,9 +28,16 @@ impl SnapshotTest {
         let content_file = fs::read_to_string(&self.path).unwrap_or_else(|_| {
             panic!("Could not read file at path: {:?}", &self.path);
         });
-        let content_snapshot = fs::read_to_string(&path).unwrap_or_else(|_| {
-            panic!("Could not read snapshot at path: {:?}", &path);
-        });
+        let content_snapshot = if path.exists() {
+            fs::read_to_string(&path).unwrap_or_else(|_| {
+                panic!("Could not read snapshot file");
+            })
+        } else {
+            fs::write(path, content_file).unwrap_or_else(|_| {
+                panic!("Could not write snapshot to file");
+            });
+            return;
+        };
         let split = content_file.split('\n').collect::<Vec<&str>>();
         dbg!(&split);
         if content_file != content_snapshot {
@@ -39,5 +46,14 @@ impl SnapshotTest {
             });
             println!("Changes!")
         }
+        self.create_properties_file();
+    }
+
+    fn create_properties_file(&self) {
+        let path: PathBuf = format!("snapshots/{}-props.toml", &self.name).into();
+        let content = format!("creation_date={}", chrono::Local::now());
+        fs::write(&path, content).unwrap_or_else(|_| {
+            panic!("Could not write properties file");
+        });
     }
 }

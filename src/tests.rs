@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
 
-    use std::{collections::HashMap, env, fs, path::PathBuf};
+    use std::path::PathBuf;
 
     use crate::{
         errors::FileHandlerError,
